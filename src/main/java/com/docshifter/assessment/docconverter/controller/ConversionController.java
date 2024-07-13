@@ -25,6 +25,15 @@ public class ConversionController {
             return ResponseEntity.status(500).body("Conversion failed: " + e.getMessage());
         }
     }
+    @PostMapping("/convert/pdf-to-word-text-only")
+    public ResponseEntity<String> convertPdfToWordTextOnly(@RequestParam("fileName") String fileName) {
+        try {
+            String outputFilePath = conversionService.convertPdfToText(fileName);
+            return ResponseEntity.ok(outputFilePath);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Conversion failed: " + e.getMessage());
+        }
+    }
 
     @PostMapping("/convert/word-to-pdf")
     public ResponseEntity<String> convertWordToPdf(@RequestParam("fileName") String fileName) {

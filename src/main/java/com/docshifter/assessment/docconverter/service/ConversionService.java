@@ -38,8 +38,35 @@ public class ConversionService {
         Path outputFile = uploadDir.resolve(fileName.replace(".pdf", ".docx"));
         log.info("Converting to Doc: {}", inputFile.toFile().getAbsolutePath());
 
-
         // Get the path to the Python script
+        Path scriptPath = loadAndExtracPdf2docxtScript();
+
+        // Call the Python script
+        log.info("Running Script...");
+        Process process = runPdf2docxtScript(scriptPath, inputFile, outputFile);
+
+        // Capture the output and errors
+        debugScriptOutput(process);
+
+        handleScriptPotentialError(process, scriptPath);
+
+        log.info("Conversion successful, output file: {}", outputFile);
+        return outputFile.toString();
+    }
+
+    private static Process runPdf2docxtScript(Path scriptPath, Path inputFile, Path outputFile) throws IOException {
+        String[] command = new String[]{
+                "python",
+                scriptPath.toString(),
+                inputFile.toFile().getAbsolutePath(),
+                outputFile.toFile().getAbsolutePath()
+        };
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.redirectErrorStream(true); // Merge stdout and stderr
+        return processBuilder.start();
+    }
+
+    private Path loadAndExtracPdf2docxtScript() throws IOException {
         InputStream scriptStream = getClass().getResourceAsStream("/scripts/convert_pdf_to_word.py");
         if (scriptStream == null) {
             throw new FileNotFoundException("Python script not found in resources.");
@@ -50,28 +77,10 @@ public class ConversionService {
 
         Files.copy(scriptStream, scriptPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         scriptStream.close();
+        return scriptPath;
+    }
 
-        // Call the Python script
-        String[] command = new String[]{
-                "python",
-                scriptPath.toString(),
-                inputFile.toFile().getAbsolutePath(),
-                outputFile.toFile().getAbsolutePath()
-        };
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.redirectErrorStream(true); // Merge stdout and stderr
-        Process process = processBuilder.start();
-
-        log.info("Running Script...");
-
-        // Capture the output and errors
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                log.debug(line);
-            }
-        }
-
+    private void handleScriptPotentialError(Process process, Path scriptPath) throws IOException {
         try {
             int exitCode = process.waitFor();
             if (exitCode != 0) {
@@ -85,8 +94,14 @@ public class ConversionService {
         } finally {
             Files.deleteIfExists(scriptPath);
         }
+    }
 
-        log.info("Conversion successful, output file: {}", outputFile);
-        return outputFile.toString();
+    private void debugScriptOutput(Process process) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                log.info(line);
+            }
+        }
     }
 }
