@@ -3,9 +3,11 @@ package com.docshifter.assessment.docconverter.converter;
 import fr.opensagres.poi.xwpf.converter.pdf.PdfConverter;
 import fr.opensagres.poi.xwpf.converter.pdf.PdfOptions;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 
+@Component
 public class WordToPdfConverter extends Converter {
 
     @Override
