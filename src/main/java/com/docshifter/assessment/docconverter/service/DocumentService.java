@@ -2,6 +2,7 @@ package com.docshifter.assessment.docconverter.service;
 
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.repository.DocumentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class DocumentService {
     private final DocumentRepository documentRepository;
     private final Path uploadDir = Paths.get("uploads");
@@ -24,25 +26,33 @@ public class DocumentService {
     public DocumentService(DocumentRepository documentRepository) throws IOException {
         this.documentRepository = documentRepository;
         Files.createDirectories(uploadDir);
+        log.info("Upload directory created: {}", uploadDir.toAbsolutePath());
     }
 
     public Document uploadDocument(MultipartFile file) throws IOException {
-        Path filePath = uploadDir.resolve(Objects.requireNonNull(file.getOriginalFilename()));
+        String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
+        Path filePath = uploadDir.resolve(originalFilename);
         Files.write(filePath, file.getBytes());
+        log.info("File uploaded: {}", filePath.toAbsolutePath());
 
         Document document = new Document();
-        document.setOriginalName(file.getOriginalFilename());
+        document.setOriginalName(originalFilename);
         document.setStatus("Uploaded");
         document.setUploadedAt(LocalDateTime.now());
         document.setFilePath(filePath.toString());
 
-        return documentRepository.save(document);
+        Document savedDocument = documentRepository.save(document);
+        log.info("Document saved to database: {}", savedDocument);
+
+        return savedDocument;
     }
 
     public List<String> getAllUploadedFileNames() {
-        return documentRepository.findAll().stream()
+        List<String> fileNames = documentRepository.findAll().stream()
                 .map(Document::getOriginalName)
                 .collect(Collectors.toList());
+        log.info("Retrieved all uploaded file names: {}", fileNames);
+        return fileNames;
     }
 
     @Transactional
@@ -50,9 +60,12 @@ public class DocumentService {
         Path filePath = uploadDir.resolve(fileName);
         if (Files.exists(filePath)) {
             Files.delete(filePath);
+            log.info("File deleted: {}", filePath.toAbsolutePath());
             documentRepository.deleteByOriginalName(fileName);
+            log.info("Document with original name '{}' deleted from database", fileName);
             return true;
         }
+        log.warn("File not found: {}", filePath.toAbsolutePath());
         return false;
     }
 
@@ -62,17 +75,28 @@ public class DocumentService {
             Path filePath = uploadDir.resolve(document.getOriginalName());
             if (Files.exists(filePath)) {
                 Files.delete(filePath);
+                log.info("File deleted: {}", filePath.toAbsolutePath());
+            } else {
+                log.warn("File not found: {}", filePath.toAbsolutePath());
             }
         }
         documentRepository.deleteAll();
+        log.info("All documents deleted from database");
     }
 
     public Path getFilePath(String fileName) {
-        return uploadDir.resolve(fileName);
+        Path filePath = uploadDir.resolve(fileName);
+        log.info("Retrieved file path: {}", filePath.toAbsolutePath());
+        return filePath;
     }
 
     public Document getDocumentById(Long id) {
         Optional<Document> document = documentRepository.findById(id);
+        if (document.isPresent()) {
+            log.info("Document retrieved: {}", document.get());
+        } else {
+            log.warn("Document with id '{}' not found", id);
+        }
         return document.orElse(null);
     }
 }

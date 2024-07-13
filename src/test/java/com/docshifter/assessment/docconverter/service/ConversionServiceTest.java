@@ -1,6 +1,7 @@
 package com.docshifter.assessment.docconverter.service;
 
 import com.docshifter.assessment.docconverter.converter.PdfToTextConverter;
+import com.docshifter.assessment.docconverter.converter.PdfToWordConverter;
 import com.docshifter.assessment.docconverter.converter.WordToPdfConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,15 +11,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -33,6 +32,8 @@ public class ConversionServiceTest {
 
     @Mock
     private WordToPdfConverter wordToPdfConverter;
+    @Mock
+    private PdfToWordConverter pdfToWordConverter;
 
     @BeforeEach
     void setUp() {
@@ -96,27 +97,15 @@ public class ConversionServiceTest {
         Files.deleteIfExists(inputFile);
         Files.createFile(inputFile);
 
+        doNothing().when(pdfToWordConverter).convert(any(File.class), any(File.class));
+
+
         // Use spy to mock the actual service
         ConversionService spyService = spy(conversionService);
-
-        // Mock the loadAndExtractPdf2docxScript method to return the desired script path
-        doReturn(scriptPath).when(spyService).loadAndExtracPdf2docxtScript();
-
-        // Mock the runPdf2docxScript method to return a mocked process
-        Process mockProcess = mock(Process.class);
-        doReturn(mockProcess).when(spyService).runPdf2docxtScript(any(Path.class), any(Path.class), any(Path.class));
-
-        // Mock the methods that handle the script output and errors
-        doNothing().when(spyService).debugScriptOutput(any(Process.class));
-        doNothing().when(spyService).handleScriptPotentialError(any(Process.class), eq(scriptPath));
 
         String result = spyService.convertPdfToDocx("test.pdf");
 
         assertEquals(outputFile.toString(), result);
-        verify(spyService, times(1)).loadAndExtracPdf2docxtScript();
-        verify(spyService, times(1)).runPdf2docxtScript(scriptPath, inputFile, outputFile);
-        verify(spyService, times(1)).debugScriptOutput(mockProcess);
-        verify(spyService, times(1)).handleScriptPotentialError(mockProcess, scriptPath);
 
         Files.deleteIfExists(inputFile);
         Files.deleteIfExists(outputFile);
@@ -125,28 +114,4 @@ public class ConversionServiceTest {
 
 
 
-    @Test
-    void testHandleScriptPotentialError() throws IOException, InterruptedException {
-        Process mockProcess = mock(Process.class);
-        Path scriptPath = Paths.get("temp/convert_pdf_to_word.py");
-
-        when(mockProcess.waitFor()).thenReturn(0);
-
-        assertDoesNotThrow(() -> conversionService.handleScriptPotentialError(mockProcess, scriptPath));
-
-        when(mockProcess.waitFor()).thenReturn(1);
-
-        RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> conversionService.handleScriptPotentialError(mockProcess, scriptPath));
-        assertEquals("Conversion failed with exit code: 1", exception.getMessage());
-    }
-
-    @Test
-    void testDebugScriptOutput() throws IOException {
-        Process mockProcess = mock(Process.class);
-        InputStream inputStream = new ByteArrayInputStream("Script output".getBytes());
-        when(mockProcess.getInputStream()).thenReturn(inputStream);
-
-        assertDoesNotThrow(() -> conversionService.debugScriptOutput(mockProcess));
-    }
 }
