@@ -11,7 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class PdfToWordConverter extends Converter {
+public class PdfToTextConverter extends Converter {
 
     @Override
     public void convert(File inputFile, File outputFile) {

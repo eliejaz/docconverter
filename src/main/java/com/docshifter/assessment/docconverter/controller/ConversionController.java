@@ -19,7 +19,7 @@ public class ConversionController {
     @PostMapping("/convert/pdf-to-word")
     public ResponseEntity<String> convertPdfToWord(@RequestParam("fileName") String fileName) {
         try {
-            String outputFilePath = conversionService.convertPdfToWord(fileName);
+            String outputFilePath = conversionService.convertPdfToDocx(fileName);
             return ResponseEntity.ok(outputFilePath);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Conversion failed: " + e.getMessage());
