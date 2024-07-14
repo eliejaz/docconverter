@@ -4,9 +4,10 @@ import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.repository.DocumentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class DocumentServiceTest {
 
     @Mock
@@ -37,9 +39,9 @@ class DocumentServiceTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        MockitoAnnotations.openMocks(this);
         Files.createDirectories(uploadDir);
     }
+
 
     @Test
     void testUploadDocument() throws IOException {
@@ -60,10 +62,12 @@ class DocumentServiceTest {
         assertEquals("testFile.txt", document.getOriginalName());
         assertEquals("Uploaded", document.getStatus());
         verify(documentRepository, times(1)).save(any(Document.class));
+        Path filePath = uploadDir.resolve("testFile.txt");
+        Files.deleteIfExists(filePath);
     }
 
     @Test
-    void testGetAllUploadedFileNames() {
+    void testGetAllUploadedFileNames() throws IOException {
         Document document = new Document();
         document.setOriginalName("testFile.txt");
 
@@ -75,6 +79,8 @@ class DocumentServiceTest {
         assertEquals(1, fileNames.size());
         assertEquals("testFile.txt", fileNames.getFirst());
         verify(documentRepository, times(1)).findAll();
+        Path filePath = uploadDir.resolve("testFile.txt");
+        Files.deleteIfExists(filePath);
     }
 
 
@@ -94,6 +100,7 @@ class DocumentServiceTest {
         when(documentRepository.findAll()).thenReturn(Collections.singletonList(document));
 
         Path filePath = uploadDir.resolve("testFile.txt");
+        Files.deleteIfExists(filePath);
         Files.createFile(filePath);
 
         documentService.deleteAllFiles();
@@ -101,6 +108,8 @@ class DocumentServiceTest {
         assertFalse(Files.exists(filePath));
         verify(documentRepository, times(1)).findAll();
         verify(documentRepository, times(1)).deleteAll();
+        Files.deleteIfExists(filePath);
+
     }
 
     @Test

@@ -35,6 +35,12 @@ public class DocumentController {
     }
 
     @GetMapping("/files")
+    public ResponseEntity<List<Document>> getAllUploadedFiles() {
+        List<Document> files = documentService.getAllFiles();
+        return ResponseEntity.ok(files);
+    }
+
+    @GetMapping("/files/names")
     public ResponseEntity<List<String>> getAllUploadedFileNames() {
         List<String> fileNames = documentService.getAllUploadedFileNames();
         return ResponseEntity.ok(fileNames);

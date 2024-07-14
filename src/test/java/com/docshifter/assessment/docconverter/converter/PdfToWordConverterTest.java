@@ -1,16 +1,12 @@
 package com.docshifter.assessment.docconverter.converter;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -25,7 +21,7 @@ public class PdfToWordConverterTest {
 
 
     @Test
-    void testHandleScriptPotentialError() throws IOException, InterruptedException {
+    void testHandleScriptPotentialError() throws InterruptedException {
         Process mockProcess = mock(Process.class);
         Path scriptPath = Paths.get("temp/convert_pdf_to_word.py");
 
@@ -41,7 +37,7 @@ public class PdfToWordConverterTest {
     }
 
     @Test
-    void testDebugScriptOutput() throws IOException {
+    void testDebugScriptOutput() {
         Process mockProcess = mock(Process.class);
         InputStream inputStream = new ByteArrayInputStream("Script output".getBytes());
         when(mockProcess.getInputStream()).thenReturn(inputStream);

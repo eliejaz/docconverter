@@ -25,7 +25,8 @@ public class Document {
     private String convertedName;
     private String status;
     private String filePath;
+    private String convertedFilePath;
     private LocalDateTime uploadedAt;
     private LocalDateTime convertedAt;
-
+    private String conversionId;
 }

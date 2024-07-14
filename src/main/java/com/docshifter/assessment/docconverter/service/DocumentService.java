@@ -23,10 +23,15 @@ public class DocumentService {
     private final DocumentRepository documentRepository;
     private final Path uploadDir = Paths.get("uploads");
 
+
     public DocumentService(DocumentRepository documentRepository) throws IOException {
         this.documentRepository = documentRepository;
         Files.createDirectories(uploadDir);
+        Path convertedDir = Paths.get("converted");
+        Files.createDirectories(convertedDir);
         log.info("Upload directory created: {}", uploadDir.toAbsolutePath());
+        log.info("Converted directory created: {}", convertedDir.toAbsolutePath());
+
     }
 
     public Document uploadDocument(MultipartFile file) throws IOException {
@@ -49,6 +54,7 @@ public class DocumentService {
 
     public List<String> getAllUploadedFileNames() {
         List<String> fileNames = documentRepository.findAll().stream()
+                .filter(d -> d.getStatus().equals("Uploaded"))
                 .map(Document::getOriginalName)
                 .collect(Collectors.toList());
         log.info("Retrieved all uploaded file names: {}", fileNames);
@@ -98,5 +104,9 @@ public class DocumentService {
             log.warn("Document with id '{}' not found", id);
         }
         return document.orElse(null);
+    }
+
+    public List<Document> getAllFiles() {
+        return documentRepository.findAll();
     }
 }
