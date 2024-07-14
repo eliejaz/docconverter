@@ -1,5 +1,6 @@
 package com.docshifter.assessment.docconverter.controller;
 
+import com.docshifter.assessment.docconverter.annotation.RateLimited;
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.repository.DocumentRepository;
 import com.docshifter.assessment.docconverter.service.ConversionService;
@@ -27,6 +28,7 @@ public class ConversionController {
         this.documentRepository = documentRepository;
     }
 
+    @RateLimited
     @PostMapping("/convert/pdf-to-word")
     public ResponseEntity<String> convertPdfToWord(@RequestParam("fileName") String fileName) {
         String conversionId = UUID.randomUUID().toString();
@@ -41,6 +43,7 @@ public class ConversionController {
         return ResponseEntity.ok("Conversion started with ID: " + conversionId);
     }
 
+    @RateLimited
     @PostMapping("/convert/pdf-to-word-text-only")
     public ResponseEntity<String> convertPdfToWordTextOnly(@RequestParam("fileName") String fileName) {
         String conversionId = UUID.randomUUID().toString();
@@ -55,6 +58,7 @@ public class ConversionController {
         return ResponseEntity.ok("Conversion started with ID: " + conversionId);
     }
 
+    @RateLimited
     @PostMapping("/convert/word-to-pdf")
     public ResponseEntity<String> convertWordToPdf(@RequestParam("fileName") String fileName) {
         String conversionId = UUID.randomUUID().toString();

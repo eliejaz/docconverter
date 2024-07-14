@@ -1,5 +1,6 @@
 package com.docshifter.assessment.docconverter.controller;
 
+import com.docshifter.assessment.docconverter.annotation.RateLimited;
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.service.DocumentService;
 import org.springframework.core.io.InputStreamResource;
@@ -24,6 +25,7 @@ public class DocumentController {
         this.documentService = documentService;
     }
 
+    @RateLimited
     @PostMapping(path = "/upload", consumes = "multipart/form-data")
     public ResponseEntity<Document> uploadDocument(@RequestParam("file") MultipartFile file) {
         try {
