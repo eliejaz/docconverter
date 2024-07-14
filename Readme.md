@@ -76,11 +76,11 @@ The application will start on `http://localhost:8080`.
 
 ### Swagger UI
 
-Access the Swagger UI for API documentation at `http://localhost:8080/swagger-ui.html`.
+Access the Swagger UI for API documentation at `http://localhost:8080/swagger-ui/index.html#/`.
 
 ### Upload a Document
 
-You need to upload a document before requesting a conversion. Use an API client like Postman or `curl` to upload files.
+You need to upload a document before requesting a conversion.
 
 ### Convert a Document
 
@@ -93,7 +93,6 @@ Check the status of your conversion request using the conversion ID.
 ### Download Converted Document
 
 Once the conversion is completed, you can download the converted document using the conversion ID.
-
 
 ## Testing
 
