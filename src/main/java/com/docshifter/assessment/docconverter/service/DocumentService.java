@@ -3,6 +3,8 @@ package com.docshifter.assessment.docconverter.service;
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.repository.DocumentRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +36,7 @@ public class DocumentService {
 
     }
 
+    @CacheEvict(value = "documents", allEntries = true)
     public Document uploadDocument(MultipartFile file) throws IOException {
         String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
         Path filePath = uploadDir.resolve(originalFilename);
@@ -52,6 +55,7 @@ public class DocumentService {
         return savedDocument;
     }
 
+    @Cacheable("documents")
     public List<String> getAllUploadedFileNames() {
         List<String> fileNames = documentRepository.findAll().stream()
                 .filter(d -> d.getStatus().equals("Uploaded"))
@@ -62,6 +66,7 @@ public class DocumentService {
     }
 
     @Transactional
+    @CacheEvict(value = "documents", allEntries = true)
     public boolean deleteFile(String fileName) throws IOException {
         Path filePath = uploadDir.resolve(fileName);
         if (Files.exists(filePath)) {
@@ -75,6 +80,7 @@ public class DocumentService {
         return false;
     }
 
+    @CacheEvict(value = "documents", allEntries = true)
     public void deleteAllFiles() throws IOException {
         List<Document> documents = documentRepository.findAll();
         for (Document document : documents) {
@@ -96,6 +102,7 @@ public class DocumentService {
         return filePath;
     }
 
+    @Cacheable(value = "document", key = "#id")
     public Document getDocumentById(Long id) {
         Optional<Document> document = documentRepository.findById(id);
         if (document.isPresent()) {
@@ -106,6 +113,7 @@ public class DocumentService {
         return document.orElse(null);
     }
 
+    @Cacheable("documents")
     public List<Document> getAllFiles() {
         return documentRepository.findAll();
     }
