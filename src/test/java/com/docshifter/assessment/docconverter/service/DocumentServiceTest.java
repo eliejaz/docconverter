@@ -70,7 +70,7 @@ class DocumentServiceTest {
     void testGetAllUploadedFileNames() throws IOException {
         Document document = new Document();
         document.setOriginalName("testFile.txt");
-
+        document.setStatus("Uploaded");
         when(documentRepository.findAll()).thenReturn(Collections.singletonList(document));
 
         List<String> fileNames = documentService.getAllUploadedFileNames();
