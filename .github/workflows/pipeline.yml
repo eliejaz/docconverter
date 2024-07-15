@@ -26,8 +26,6 @@ jobs:
       run: mvn test
 
     - name: SonarQube Scan
-          env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           run: mvn sonar:sonar -Dsonar.projectKey=your-project-key -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
     - name: Build Docker image
