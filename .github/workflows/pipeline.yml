@@ -9,9 +9,8 @@ on:
       - master
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -24,6 +23,13 @@ jobs:
 
     - name: Run tests
       run: mvn test
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
       
     - name: Build Docker image
       run: docker build -t eliejaz/docconverter:${{ github.sha }} .
