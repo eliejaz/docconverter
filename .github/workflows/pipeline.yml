@@ -24,10 +24,7 @@ jobs:
 
     - name: Run tests
       run: mvn test
-
-    - name: SonarQube Scan
-      run: mvn sonar:sonar -Dsonar.projectKey=docconverter -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-
+      
     - name: Build Docker image
       run: docker build -t eliejaz/docconverter:${{ github.sha }} .
 
