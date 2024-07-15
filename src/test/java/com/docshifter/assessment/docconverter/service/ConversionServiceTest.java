@@ -4,6 +4,7 @@ import com.docshifter.assessment.docconverter.converter.PdfToTextConverter;
 import com.docshifter.assessment.docconverter.converter.PdfToWordConverter;
 import com.docshifter.assessment.docconverter.converter.WordToPdfConverter;
 import com.docshifter.assessment.docconverter.model.Document;
+import com.docshifter.assessment.docconverter.model.DocumentStatus;
 import com.docshifter.assessment.docconverter.repository.DocumentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,7 @@ public class ConversionServiceTest {
         // Mock DocumentRepository behavior
         Document document = new Document();
         document.setConversionId(conversionId);
-        document.setStatus("REQUESTED");
+        document.setStatus(DocumentStatus.REQUESTED);
         when(documentRepository.findByConversionId(conversionId)).thenReturn(Optional.of(document));
 
         conversionService.convertPdfToText("test.pdf", conversionId);
@@ -93,7 +94,7 @@ public class ConversionServiceTest {
         // Mock DocumentRepository behavior
         Document document = new Document();
         document.setConversionId(conversionId);
-        document.setStatus("REQUESTED");
+        document.setStatus(DocumentStatus.REQUESTED);
         when(documentRepository.findByConversionId(conversionId)).thenReturn(Optional.of(document));
 
         conversionService.convertWordToPdf("test.docx", conversionId);
@@ -122,7 +123,7 @@ public class ConversionServiceTest {
         // Mock DocumentRepository behavior
         Document document = new Document();
         document.setConversionId(conversionId);
-        document.setStatus("REQUESTED");
+        document.setStatus(DocumentStatus.REQUESTED);
         when(documentRepository.findByConversionId(conversionId)).thenReturn(Optional.of(document));
 
         conversionService.convertPdfToDocx("test.pdf", conversionId);

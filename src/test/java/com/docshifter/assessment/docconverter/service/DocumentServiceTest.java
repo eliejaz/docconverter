@@ -1,6 +1,7 @@
 package com.docshifter.assessment.docconverter.service;
 
 import com.docshifter.assessment.docconverter.model.Document;
+import com.docshifter.assessment.docconverter.model.DocumentStatus;
 import com.docshifter.assessment.docconverter.repository.DocumentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ class DocumentServiceTest {
         Document savedDocument = new Document();
         savedDocument.setId(1L);
         savedDocument.setOriginalName("testFile.txt");
-        savedDocument.setStatus("Uploaded");
+        savedDocument.setStatus(DocumentStatus.UPLOADED);
         savedDocument.setUploadedAt(LocalDateTime.now());
 
         when(documentRepository.save(any(Document.class))).thenReturn(savedDocument);
@@ -60,7 +61,7 @@ class DocumentServiceTest {
 
         assertNotNull(document);
         assertEquals("testFile.txt", document.getOriginalName());
-        assertEquals("Uploaded", document.getStatus());
+        assertEquals(DocumentStatus.UPLOADED, document.getStatus());
         verify(documentRepository, times(1)).save(any(Document.class));
         Path filePath = uploadDir.resolve("testFile.txt");
         Files.deleteIfExists(filePath);
@@ -70,7 +71,7 @@ class DocumentServiceTest {
     void testGetAllUploadedFileNames() throws IOException {
         Document document = new Document();
         document.setOriginalName("testFile.txt");
-        document.setStatus("Uploaded");
+        document.setStatus(DocumentStatus.UPLOADED);
         when(documentRepository.findAll()).thenReturn(Collections.singletonList(document));
 
         List<String> fileNames = documentService.getAllUploadedFileNames();
