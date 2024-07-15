@@ -1,0 +1,55 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Run tests
+      run: mvn test
+
+    - name: Build Docker image
+      run: docker build -t eliejaz/docconverter:${{ github.sha }} .
+
+    - name: Log in to DockerHub
+      run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+    - name: Push Docker image
+      run: docker push eliejaz/docconverter:${{ github.sha }}
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: build
+
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v3
+
+  #   - name: Set up Kubectl
+  #     uses: azure/setup-kubectl@v2
+  #     with:
+  #       version: 'latest'
+
+  #   - name: Set up Kubeconfig
+  #     run: echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+
+  #   - name: Deploy to Kubernetes
+  #     run: kubectl apply -f k8s/k8s-deployment.yml -f k8s/k8s-service.yml
+
