@@ -1,6 +1,7 @@
 package com.docshifter.assessment.docconverter.service;
 
 import com.docshifter.assessment.docconverter.model.Document;
+import com.docshifter.assessment.docconverter.model.DocumentStatus;
 import com.docshifter.assessment.docconverter.repository.DocumentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +47,7 @@ public class DocumentService {
 
         Document document = new Document();
         document.setOriginalName(originalFilename);
-        document.setStatus("Uploaded");
+        document.setStatus(DocumentStatus.UPLOADED);
         document.setUploadedAt(LocalDateTime.now());
         document.setFilePath(filePath.toString());
 
@@ -58,7 +60,7 @@ public class DocumentService {
     @Cacheable("documents")
     public List<String> getAllUploadedFileNames() {
         List<String> fileNames = documentRepository.findAll().stream()
-                .filter(d -> d.getStatus().equals("Uploaded"))
+                .filter(d -> d.getStatus().equals(DocumentStatus.UPLOADED))
                 .map(Document::getOriginalName)
                 .collect(Collectors.toList());
         log.info("Retrieved all uploaded file names: {}", fileNames);
@@ -96,12 +98,6 @@ public class DocumentService {
         log.info("All documents deleted from database");
     }
 
-    public Path getFilePath(String fileName) {
-        Path filePath = uploadDir.resolve(fileName);
-        log.info("Retrieved file path: {}", filePath.toAbsolutePath());
-        return filePath;
-    }
-
     @Cacheable(value = "document", key = "#id")
     public Document getDocumentById(Long id) {
         Optional<Document> document = documentRepository.findById(id);
@@ -113,8 +109,25 @@ public class DocumentService {
         return document.orElse(null);
     }
 
+    @CacheEvict(value = "documents", allEntries = true)
+    public String createRequestedDocument(String fileName){
+        String conversionId = UUID.randomUUID().toString();
+        Document document = new Document();
+        document.setOriginalName(fileName);
+        document.setConversionId(conversionId);
+        document.setStatus(DocumentStatus.REQUESTED);
+        document.setUploadedAt(LocalDateTime.now());
+        documentRepository.save(document);
+        return conversionId;
+    }
+
     @Cacheable("documents")
     public List<Document> getAllFiles() {
         return documentRepository.findAll();
     }
+
+    public Document getDocumentByOriginalName(String originalName) {
+        return documentRepository.findByOriginalName(originalName);
+    }
+
 }

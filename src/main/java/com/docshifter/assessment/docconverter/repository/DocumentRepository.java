@@ -9,4 +9,6 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     void deleteByOriginalName(String originalName);
 
     Optional<Document> findByConversionId(String conversionId);
+
+    Document findByOriginalName(String originalName);
 }

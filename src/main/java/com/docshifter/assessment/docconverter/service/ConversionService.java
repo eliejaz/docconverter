@@ -4,6 +4,7 @@ import com.docshifter.assessment.docconverter.converter.PdfToTextConverter;
 import com.docshifter.assessment.docconverter.converter.PdfToWordConverter;
 import com.docshifter.assessment.docconverter.converter.WordToPdfConverter;
 import com.docshifter.assessment.docconverter.model.Document;
+import com.docshifter.assessment.docconverter.model.DocumentStatus;
 import com.docshifter.assessment.docconverter.repository.DocumentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -39,9 +40,9 @@ public class ConversionService {
     public void convertPdfToText(String fileName, String conversionId) {
         Path inputFile = uploadDir.resolve(fileName);
         Path outputFile = convertedDir.resolve(fileName.replace(".pdf", ".docx"));
-        updateDocumentStatus(conversionId, "IN_PROGRESS");
+        updateDocumentStatus(conversionId, DocumentStatus.IN_PROGRESS);
         pdfToTextConverter.convert(inputFile.toFile(), outputFile.toFile());
-        updateDocumentStatus(conversionId, "COMPLETED", outputFile.getFileName().toString(), LocalDateTime.now(), outputFile.toString());
+        updateDocumentStatus(conversionId, DocumentStatus.COMPLETED, outputFile.getFileName().toString(), LocalDateTime.now(), outputFile.toString());
     }
 
     @Async
@@ -49,9 +50,9 @@ public class ConversionService {
     public void convertWordToPdf(String fileName, String conversionId) {
         Path inputFile = uploadDir.resolve(fileName);
         Path outputFile = convertedDir.resolve(fileName.replace(".docx", ".pdf"));
-        updateDocumentStatus(conversionId, "IN_PROGRESS");
+        updateDocumentStatus(conversionId, DocumentStatus.IN_PROGRESS);
         wordToPdfConverter.convert(inputFile.toFile(), outputFile.toFile());
-        updateDocumentStatus(conversionId, "COMPLETED", outputFile.getFileName().toString(), LocalDateTime.now(), outputFile.toString());
+        updateDocumentStatus(conversionId, DocumentStatus.COMPLETED, outputFile.getFileName().toString(), LocalDateTime.now(), outputFile.toString());
     }
 
     @Async
@@ -60,12 +61,12 @@ public class ConversionService {
         Path inputFile = uploadDir.resolve(fileName);
         Path outputFile = convertedDir.resolve(fileName.replace(".pdf", ".docx"));
         log.info("Converting to Doc: {}", inputFile.toFile().getAbsolutePath());
-        updateDocumentStatus(conversionId, "IN_PROGRESS");
+        updateDocumentStatus(conversionId, DocumentStatus.IN_PROGRESS);
         pdfToWordConverter.convert(inputFile.toFile(), outputFile.toFile());
-        updateDocumentStatus(conversionId, "COMPLETED", outputFile.getFileName().toString(), LocalDateTime.now(), outputFile.toString());
+        updateDocumentStatus(conversionId, DocumentStatus.COMPLETED, outputFile.getFileName().toString(), LocalDateTime.now(), outputFile.toString());
     }
 
-    private void updateDocumentStatus(String conversionId, String status) {
+    private void updateDocumentStatus(String conversionId, DocumentStatus status) {
         Optional<Document> documentOptional = documentRepository.findByConversionId(conversionId);
         documentOptional.ifPresent(document -> {
             document.setStatus(status);
@@ -73,7 +74,7 @@ public class ConversionService {
         });
     }
 
-    private void updateDocumentStatus(String conversionId, String status, String convertedName, LocalDateTime convertedAt, String convertedFilePath) {
+    private void updateDocumentStatus(String conversionId, DocumentStatus status, String convertedName, LocalDateTime convertedAt, String convertedFilePath) {
         Optional<Document> documentOptional = documentRepository.findByConversionId(conversionId);
         documentOptional.ifPresent(document -> {
             document.setStatus(status);
@@ -84,13 +85,14 @@ public class ConversionService {
         });
     }
 
-    public String getConversionStatus(String conversionId) {
+    public DocumentStatus getConversionStatus(String conversionId) {
         Optional<Document> documentOptional = documentRepository.findByConversionId(conversionId);
-        return documentOptional.map(Document::getStatus).orElse("UNKNOWN");
+        return documentOptional.map(Document::getStatus).orElse(DocumentStatus.UNKNOWN);
     }
 
-    public Path getConvertedFilePath(String conversionId) {
+    public Optional<Document> getDocumentWithConvertedFilePath(String conversionId) {
         Optional<Document> documentOptional = documentRepository.findByConversionId(conversionId);
-        return documentOptional.map(document -> Paths.get(document.getConvertedFilePath())).orElse(null);
+        return documentOptional.filter(document -> DocumentStatus.COMPLETED.equals(document.getStatus()));
     }
+
 }

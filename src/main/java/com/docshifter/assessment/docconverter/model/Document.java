@@ -1,9 +1,6 @@
 package com.docshifter.assessment.docconverter.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -23,7 +20,8 @@ public class Document {
 
     private String originalName;
     private String convertedName;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private DocumentStatus status;
     private String filePath;
     private String convertedFilePath;
     private LocalDateTime uploadedAt;

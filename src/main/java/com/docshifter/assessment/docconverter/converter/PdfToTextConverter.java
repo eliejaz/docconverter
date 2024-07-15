@@ -5,7 +5,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -26,14 +25,18 @@ public class PdfToTextConverter extends Converter {
                 XWPFParagraph paragraph = wordDocument.createParagraph();
                 paragraph.createRun().setText(pdfText);
 
-                try (OutputStream wordOutputStream = new FileOutputStream(outputFile)) {
-                    wordDocument.write(wordOutputStream);
-                }
+                outputConvertedDocument(outputFile, wordDocument);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void outputConvertedDocument(File outputFile, XWPFDocument wordDocument) throws IOException {
+        try (OutputStream wordOutputStream = new FileOutputStream(outputFile)) {
+            wordDocument.write(wordOutputStream);
         }
     }
 }

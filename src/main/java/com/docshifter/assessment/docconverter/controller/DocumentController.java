@@ -3,6 +3,7 @@ package com.docshifter.assessment.docconverter.controller;
 import com.docshifter.assessment.docconverter.annotation.RateLimited;
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.service.DocumentService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -14,9 +15,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequestMapping("/api/documents")
 public class DocumentController {
     private final DocumentService documentService;
@@ -37,12 +40,12 @@ public class DocumentController {
     }
 
     @GetMapping("/files")
-    public ResponseEntity<List<Document>> getAllUploadedFiles() {
+    public ResponseEntity<List<Document>> getAllFiles() {
         List<Document> files = documentService.getAllFiles();
         return ResponseEntity.ok(files);
     }
 
-    @GetMapping("/files/names")
+    @GetMapping("/files/uploaded/name")
     public ResponseEntity<List<String>> getAllUploadedFileNames() {
         List<String> fileNames = documentService.getAllUploadedFileNames();
         return ResponseEntity.ok(fileNames);
@@ -75,22 +78,36 @@ public class DocumentController {
 
     @GetMapping("/file")
     public ResponseEntity<InputStreamResource> downloadFile(@RequestParam("fileName") String fileName) {
+        log.info("Request received to download file: {}", fileName);
         try {
-            Path filePath = documentService.getFilePath(fileName);
-            if (filePath != null && Files.exists(filePath)) {
-                InputStreamResource resource = new InputStreamResource(new FileInputStream(filePath.toFile()));
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + fileName)
-                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                        .contentLength(Files.size(filePath))
-                        .body(resource);
+            // Check if the document exists and is completed
+            Document document = documentService.getDocumentByOriginalName(fileName);
+            if (document != null && document.getFilePath() != null) {
+                log.info("Document found in database: {}", document);
+                Path filePath = Paths.get(document.getFilePath());
+                if (Files.exists(filePath)) {
+                    log.info("File exists at path: {}", filePath.toAbsolutePath());
+                    InputStreamResource resource = new InputStreamResource(new FileInputStream(filePath.toFile()));
+                    return ResponseEntity.ok()
+                            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + fileName)
+                            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                            .contentLength(Files.size(filePath))
+                            .body(resource);
+                } else {
+                    log.warn("File not found at path: {}", filePath.toAbsolutePath());
+                    return ResponseEntity.status(404).body(null);
+                }
             } else {
+                log.warn("Document not found.");
                 return ResponseEntity.status(404).body(null);
             }
         } catch (IOException e) {
+            log.error("Error occurred while processing the file download: {}", e.getMessage());
             return ResponseEntity.status(500).body(null);
         }
     }
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Document> getDocumentDetails(@PathVariable Long id) {
