@@ -35,9 +35,9 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
-        
+
     - name: Build with Maven cloud
-      run:  mvn -B verify sonar:sonar -Dsonar.projectKey=eliejaz_docconverter -Dsonar.organization=eliejaz -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      run:  mvn -B verify sonar:sonar -Dsonar.projectKey=eliejaz_docconverter -Dsonar.organization=eliejaz -Dsonar.host.url=https://sonarcloud.io -Dsonar.token=${{ secrets.SONAR_TOKEN }}
 
   build:
     runs-on: ubuntu-latest

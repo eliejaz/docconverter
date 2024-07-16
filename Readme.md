@@ -10,7 +10,9 @@ Document Converter is a Spring Boot application that provides REST APIs to conve
 - [Usage](#usage)
 - [API Endpoints](#api-endpoints)
 - [Testing](#testing)
-- [Contributing](#contributing)
+- [CI/CD Pipeline](#cicd-pipeline)
+- [Kubernetes Deployment](#kubernetes-deployment)
+- [Docker Compose](#docker-compose)
 - [License](#license)
 
 ## Features
@@ -20,6 +22,9 @@ Document Converter is a Spring Boot application that provides REST APIs to conve
 - Convert DOCX to PDF
 - Asynchronous processing of conversion tasks
 - Swagger UI for API documentation
+- Caching enabled
+- Rate limiting
+- Comprehensive CI/CD pipeline
 
 ## Technologies
 
@@ -33,6 +38,8 @@ Document Converter is a Spring Boot application that provides REST APIs to conve
 - Lombok
 - Mockito
 - JUnit 5
+- Bucket4j (for rate limiting)
+- SonarCloud (for static code analysis)
 
 ## Setup
 
@@ -101,5 +108,27 @@ To run the tests:
 ```bash
 mvn test
 ```
+
+## CI/CD Pipeline
+
+The project includes a complete CI/CD pipeline configured using GitHub Actions. The pipeline performs the following tasks:
+- Builds the project
+- Runs all tests
+- Performs static code analysis with SonarCloud
+- Builds and pushes a Docker image to DockerHub
+
+To trigger the pipeline, push changes to the `master` branch or create a pull request targeting the `master` branch.
+
+## Kubernetes Deployment
+
+Kubernetes manifests are provided to deploy the application to a Kubernetes cluster.
+
+## Docker Compose
+
+A docker-compose.yml file is provided to run the microservice with monitoring and alerting using Prometheus and Grafana.
+
+## License
+
+This project is licensed under the MIT License.
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=eliejaz_docconverter&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=eliejaz_docconverter)
