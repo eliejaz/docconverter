@@ -6,9 +6,9 @@ Document Converter is a Spring Boot application that provides REST APIs to conve
 
 - [Features](#features)
 - [Technologies](#technologies)
+- [Caching Mechanism](#caching-mechanism)
 - [Setup](#setup)
 - [Usage](#usage)
-- [API Endpoints](#api-endpoints)
 - [Testing](#testing)
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Kubernetes Deployment](#kubernetes-deployment)
@@ -40,6 +40,18 @@ Document Converter is a Spring Boot application that provides REST APIs to conve
 - JUnit 5
 - Bucket4j (for rate limiting)
 - SonarCloud (for static code analysis)
+- Prometheus/Grafana for monitoring
+
+## Caching Mechanism
+
+The application uses Spring's caching abstraction to cache frequently accessed data, which helps in reducing the load on the database and improves performance. The caching is enabled for the following operations:
+
+- Uploading a document: Cache is evicted when a new document is uploaded.
+- Getting all uploaded file names: Cached to improve retrieval speed.
+- Getting document details by ID: Cached to reduce repetitive database queries.
+- Getting all files: Cached to optimize performance.
+
+The cache configuration can be found in the `DocumentService` clas.
 
 ## Setup
 
