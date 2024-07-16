@@ -24,6 +24,21 @@ jobs:
     - name: Run tests
       run: mvn test
 
+  analysis:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout code
+      uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Build with Maven cloud
+        run:  mvn -B verify sonar:sonar -Dsonar.projectKey=eliejaz_docconverter -Dsonar.organization=eliejaz -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+
   build:
     runs-on: ubuntu-latest
 
