@@ -67,17 +67,6 @@ public class ConversionServiceTest {
         originalPDfDocument.setUploadedAt(LocalDateTime.now());
         originalPDfDocument.setFilePath(pdfPath.toString());
 
-
-        Files.createDirectories(pdfPath.getParent());
-        Files.deleteIfExists(pdfPath);
-        Files.deleteIfExists(docxPath);
-        Files.createFile(pdfPath);
-        Files.createFile(docxPath);
-    }
-    @AfterEach
-    void afterEach() throws IOException {
-        Files.deleteIfExists(pdfPath);
-        Files.deleteIfExists(docxPath);
     }
 
     @Test
