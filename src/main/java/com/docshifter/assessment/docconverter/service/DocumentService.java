@@ -1,11 +1,13 @@
 package com.docshifter.assessment.docconverter.service;
 
+import com.docshifter.assessment.docconverter.dto.StatusChangeNotification;
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.model.DocumentStatus;
 import com.docshifter.assessment.docconverter.repository.DocumentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,12 +26,16 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class DocumentService {
-    private final DocumentRepository documentRepository;
     private final Path uploadDir = Paths.get("uploads");
 
+    private SimpMessagingTemplate template;
+    private final DocumentRepository documentRepository;
 
-    public DocumentService(DocumentRepository documentRepository) throws IOException {
+
+    public DocumentService(DocumentRepository documentRepository, SimpMessagingTemplate template) throws IOException {
         this.documentRepository = documentRepository;
+        this.template = template;
+
         Files.createDirectories(uploadDir);
         Path convertedDir = Paths.get("converted");
         Files.createDirectories(convertedDir);
@@ -140,6 +146,7 @@ public class DocumentService {
         documentOptional.ifPresent(document -> {
             document.setStatus(status);
             documentRepository.save(document);
+            sendNotificationStatusChange(document);
         });
     }
 
@@ -156,6 +163,8 @@ public class DocumentService {
             document.setConvertedAt(convertedAt);
             document.setConvertedFilePath(convertedFilePath);
             documentRepository.save(document);
+
+            sendNotificationStatusChange(document);
         });
     }
 
@@ -167,6 +176,16 @@ public class DocumentService {
     public Optional<Document> getDocumentWithConversionID(String conversionId) {
         Optional<Document> documentOptional = documentRepository.findByConversionId(conversionId);
         return documentOptional.filter(document -> DocumentStatus.COMPLETED.equals(document.getStatus()));
+    }
+
+
+    private void sendNotificationStatusChange(Document document) {
+        StatusChangeNotification statusChangeNotification = new StatusChangeNotification();
+        statusChangeNotification.setConvertedAt(document.getConvertedAt());
+        statusChangeNotification.setConvertedFilePath(document.getConvertedFilePath());
+        statusChangeNotification.setConvertedName(document.getConvertedName());
+        statusChangeNotification.setNewDocumentStatus(document.getStatus());
+        template.convertAndSend("/topic/notification", statusChangeNotification);
     }
 
 }
