@@ -7,6 +7,8 @@ Document Converter is a Spring Boot application that provides REST APIs to conve
 - [Features](#features)
 - [Technologies](#technologies)
 - [Caching Mechanism](#caching-mechanism)
+- [Rate Limiting](#rate-limiting)
+- [WebSocket Notifications](#websocket-notifications)
 - [Setup](#setup)
 - [Usage](#usage)
 - [Testing](#testing)
@@ -24,6 +26,7 @@ Document Converter is a Spring Boot application that provides REST APIs to conve
 - Swagger UI for API documentation
 - Caching enabled
 - Rate limiting
+- WebSocket notifications for status changes
 - Comprehensive CI/CD pipeline
 
 ## Technologies
@@ -41,6 +44,7 @@ Document Converter is a Spring Boot application that provides REST APIs to conve
 - Bucket4j (for rate limiting)
 - SonarCloud (for static code analysis)
 - Prometheus/Grafana for monitoring
+- WebSocket (for real-time notifications)
 
 ## Caching Mechanism
 
@@ -52,6 +56,15 @@ The application uses Spring's caching abstraction to cache frequently accessed d
 - Getting all files: Cached to optimize performance.
 
 The cache configuration can be found in the `DocumentService` clas.
+
+## Rate Limiting
+
+To prevent abuse and ensure fair usage of the API, rate limiting is implemented using Bucket4j. The `@RateLimited` annotation is used to apply rate limits on specific API endpoints. To ensure the rate limit, an Aspect class `RateLimitingAspect` is created that will consume from the bucket each time the api is called.
+
+## WebSocket Notifications
+
+The application uses WebSocket to provide real-time notifications to clients about the status of their document conversion requests. When the status of a document changes (e.g., from "UPLOADED" to "CONVERTED"), a notification is sent to the client. This allows users to be immediately informed when their document is ready for download.
+
 
 ## Setup
 
