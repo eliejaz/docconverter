@@ -181,10 +181,12 @@ public class DocumentService {
 
     private void sendNotificationStatusChange(Document document) {
         StatusChangeNotification statusChangeNotification = new StatusChangeNotification();
+        statusChangeNotification.setFileId(document.getId());
         statusChangeNotification.setConvertedAt(document.getConvertedAt());
         statusChangeNotification.setConvertedFilePath(document.getConvertedFilePath());
         statusChangeNotification.setConvertedName(document.getConvertedName());
         statusChangeNotification.setNewDocumentStatus(document.getStatus());
+        log.info("Sending to websocket...");
         template.convertAndSend("/topic/notification", statusChangeNotification);
     }
 
