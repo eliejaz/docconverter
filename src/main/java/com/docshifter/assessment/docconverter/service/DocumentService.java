@@ -104,16 +104,20 @@ public class DocumentService {
         if (document.isPresent()) {
             log.info("Document retrieved: {}", document.get());
         } else {
-            log.warn("Document with id '{}' not found", id);
+            log.error("Document with id '{}' not found", id);
+            throw  new RuntimeException("Document with id" + id + " not found");
+
         }
         return document.orElse(null);
     }
 
     @CacheEvict(value = "documents", allEntries = true)
-    public String createRequestedDocument(String fileName){
+    public String createRequestedDocument(Long fileId){
+        Document orignalDocument = getDocumentById(fileId);
+
         String conversionId = UUID.randomUUID().toString();
         Document document = new Document();
-        document.setOriginalName(fileName);
+        document.setOriginalName(orignalDocument.getOriginalName());
         document.setConversionId(conversionId);
         document.setStatus(DocumentStatus.REQUESTED);
         document.setUploadedAt(LocalDateTime.now());
@@ -128,6 +132,37 @@ public class DocumentService {
 
     public Document getDocumentByOriginalName(String originalName) {
         return documentRepository.findByOriginalName(originalName);
+    }
+
+    @CacheEvict(value = "documents", allEntries = true)
+    public void updateDocumentStatus(String conversionId, DocumentStatus status) {
+        Optional<Document> documentOptional = documentRepository.findByConversionId(conversionId);
+        documentOptional.ifPresent(document -> {
+            document.setStatus(status);
+            documentRepository.save(document);
+        });
+    }
+
+    @CacheEvict(value = "documents", allEntries = true)
+    public void updateDocumentStatus(String conversionId, DocumentStatus status, String convertedName, LocalDateTime convertedAt, String convertedFilePath) {
+        Optional<Document> documentOptional = documentRepository.findByConversionId(conversionId);
+        documentOptional.ifPresent(document -> {
+            document.setStatus(status);
+            document.setConvertedName(convertedName);
+            document.setConvertedAt(convertedAt);
+            document.setConvertedFilePath(convertedFilePath);
+            documentRepository.save(document);
+        });
+    }
+
+    public DocumentStatus getConversionStatus(String conversionId) {
+        Optional<Document> documentOptional = documentRepository.findByConversionId(conversionId);
+        return documentOptional.map(Document::getStatus).orElse(DocumentStatus.UNKNOWN);
+    }
+
+    public Optional<Document> getDocumentWithConversionID(String conversionId) {
+        Optional<Document> documentOptional = documentRepository.findByConversionId(conversionId);
+        return documentOptional.filter(document -> DocumentStatus.COMPLETED.equals(document.getStatus()));
     }
 
 }

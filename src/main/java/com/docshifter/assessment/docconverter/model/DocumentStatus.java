@@ -5,5 +5,6 @@ public enum DocumentStatus {
         REQUESTED,
         IN_PROGRESS,
         COMPLETED,
+        FAILED,
         UNKNOWN
 }

@@ -1,6 +1,7 @@
 package com.docshifter.assessment.docconverter.controller;
 
 import com.docshifter.assessment.docconverter.annotation.RateLimited;
+import com.docshifter.assessment.docconverter.dto.ConversionResponse;
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.model.DocumentStatus;
 import com.docshifter.assessment.docconverter.service.ConversionService;
@@ -32,42 +33,42 @@ public class ConversionController {
     }
 
     @RateLimited
-    @PostMapping("/convert/pdf-to-word")
-    public ResponseEntity<String> convertPdfToWord(@RequestParam("fileName") String fileName) {
-        String conversionId = documentService.createRequestedDocument(fileName);
+    @GetMapping("/convert/pdf-to-word")
+    public ResponseEntity<ConversionResponse> convertPdfToWord(@RequestParam("fileId") Long fileId) {
+        String conversionId = documentService.createRequestedDocument(fileId);
 
-        conversionService.convertPdfToDocx(fileName, conversionId);
-        return ResponseEntity.ok("Conversion started with ID: " + conversionId);
+        conversionService.convertPdfToDocx(fileId, conversionId);
+        return ResponseEntity.ok(new ConversionResponse(conversionId));
     }
 
     @RateLimited
-    @PostMapping("/convert/pdf-to-word-text-only")
-    public ResponseEntity<String> convertPdfToWordTextOnly(@RequestParam("fileName") String fileName) {
-        String conversionId = documentService.createRequestedDocument(fileName);
+    @GetMapping("/convert/pdf-to-word-text-only")
+    public ResponseEntity<ConversionResponse> convertPdfToWordTextOnly(@RequestParam("fileId") Long fileId) {
+        String conversionId = documentService.createRequestedDocument(fileId);
 
-        conversionService.convertPdfToText(fileName, conversionId);
-        return ResponseEntity.ok("Conversion started with ID: " + conversionId);
+        conversionService.convertPdfToText(fileId, conversionId);
+        return ResponseEntity.ok(new ConversionResponse(conversionId));
     }
 
     @RateLimited
-    @PostMapping("/convert/word-to-pdf")
-    public ResponseEntity<String> convertWordToPdf(@RequestParam("fileName") String fileName) {
-        String conversionId = documentService.createRequestedDocument(fileName);
+    @GetMapping("/convert/word-to-pdf")
+    public ResponseEntity<ConversionResponse> convertWordToPdf(@RequestParam("fileId") Long fileId) {
+        String conversionId = documentService.createRequestedDocument(fileId);
 
-        conversionService.convertWordToPdf(fileName, conversionId);
-        return ResponseEntity.ok("Conversion started with ID: " + conversionId);
+        conversionService.convertWordToPdf(fileId, conversionId);
+        return ResponseEntity.ok(new ConversionResponse(conversionId));
     }
 
     @GetMapping("/status/{conversionId}")
-    public ResponseEntity<String> getConversionStatus(@PathVariable String conversionId) {
-        DocumentStatus status = conversionService.getConversionStatus(conversionId);
-        return ResponseEntity.ok("Conversion status: " + status);
+    public ResponseEntity<DocumentStatus> getConversionStatus(@PathVariable String conversionId) {
+        DocumentStatus status = documentService.getConversionStatus(conversionId);
+        return ResponseEntity.ok( status);
     }
 
     @GetMapping("/download/{conversionId}")
     public ResponseEntity<?> downloadConvertedFile(@PathVariable String conversionId) {
         log.info("Request received to download file with conversion ID: {}", conversionId);
-        Optional<Document> documentOptional = conversionService.getDocumentWithConvertedFilePath(conversionId);
+        Optional<Document> documentOptional = documentService.getDocumentWithConversionID(conversionId);
 
         if (documentOptional.isEmpty()) {
             log.warn("Document not found or conversion not completed for conversion ID: {}", conversionId);
