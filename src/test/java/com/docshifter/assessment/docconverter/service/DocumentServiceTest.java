@@ -130,11 +130,14 @@ class DocumentServiceTest {
 
     @Test
     void testGetDocumentByIdNotFound() {
-        when(documentRepository.findById(1L)).thenReturn(Optional.empty());
+        Long documentId = 1L;
+        when(documentRepository.findById(documentId)).thenReturn(Optional.empty());
 
-        Document foundDocument = documentService.getDocumentById(1L);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            documentService.getDocumentById(documentId);
+        });
 
-        assertNull(foundDocument);
-        verify(documentRepository, times(1)).findById(1L);
+        assertEquals("Document with id1 not found", exception.getMessage());
+        verify(documentRepository, times(1)).findById(documentId);
     }
 }

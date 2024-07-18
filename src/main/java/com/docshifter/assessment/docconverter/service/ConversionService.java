@@ -76,13 +76,6 @@ public class ConversionService {
         documentService.updateDocumentStatus(conversionId, DocumentStatus.COMPLETED, outputFile.getFileName().toString(), LocalDateTime.now(), outputFile.toString());
     }
 
-    private static void checkInputPAth(Path inputFile) {
-        if (inputFile == null) {
-            log.error("Original file name was not found");
-            throw new RuntimeException("Original file name was not found");
-        }
-    }
-
 
     private void checkRetrievedDocFilePath(String conversionId, Document doc) {
         if (doc.getFilePath() == null){

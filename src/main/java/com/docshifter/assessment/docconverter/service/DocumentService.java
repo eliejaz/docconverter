@@ -136,16 +136,20 @@ public class DocumentService {
 
     @CacheEvict(value = "documents", allEntries = true)
     public void updateDocumentStatus(String conversionId, DocumentStatus status) {
-        Optional<Document> documentOptional = documentRepository.findByConversionId(conversionId);
+        Optional<Document> documentOptional = getDocumentByConversionId(conversionId);
         documentOptional.ifPresent(document -> {
             document.setStatus(status);
             documentRepository.save(document);
         });
     }
 
+    public Optional<Document> getDocumentByConversionId(String conversionId) {
+        return  documentRepository.findByConversionId(conversionId);
+    }
+
     @CacheEvict(value = "documents", allEntries = true)
     public void updateDocumentStatus(String conversionId, DocumentStatus status, String convertedName, LocalDateTime convertedAt, String convertedFilePath) {
-        Optional<Document> documentOptional = documentRepository.findByConversionId(conversionId);
+        Optional<Document> documentOptional = getDocumentByConversionId(conversionId);
         documentOptional.ifPresent(document -> {
             document.setStatus(status);
             document.setConvertedName(convertedName);
