@@ -47,6 +47,16 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Install pdf2docx library
+      run: |
+        python -m pip install --upgrade pip
+        pip install pdf2docx
+        
     - name: Build with Maven cloud
       run:  mvn -B verify sonar:sonar -Dsonar.projectKey=eliejaz_docconverter -Dsonar.organization=eliejaz -Dsonar.host.url=https://sonarcloud.io -Dsonar.token=${{ secrets.SONAR_TOKEN }}
 
