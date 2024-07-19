@@ -1,5 +1,6 @@
-package com.docshifter.assessment.docconverter.converter;
+package com.docshifter.assessment.docconverter.converter.implementation;
 
+import com.docshifter.assessment.docconverter.converter.implementation.PdfToWordConverter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

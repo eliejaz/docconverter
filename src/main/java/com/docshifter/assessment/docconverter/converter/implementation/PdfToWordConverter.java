@@ -1,5 +1,6 @@
-package com.docshifter.assessment.docconverter.converter;
+package com.docshifter.assessment.docconverter.converter.implementation;
 
+import com.docshifter.assessment.docconverter.converter.DocumentConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +10,7 @@ import java.nio.file.Path;
 
 @Slf4j
 @Component
-public class PdfToWordConverter extends Converter {
+public class PdfToWordConverter extends DocumentConverter {
     @Override
     public void convert(File inputFile, File outputFile) {
 

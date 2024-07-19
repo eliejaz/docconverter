@@ -1,5 +1,6 @@
-package com.docshifter.assessment.docconverter.converter;
+package com.docshifter.assessment.docconverter.converter.implementation;
 
+import com.docshifter.assessment.docconverter.converter.DocumentConverter;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -13,7 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 @Component
-public class PdfToTextConverter extends Converter {
+public class PdfToTextConverter extends DocumentConverter {
 
     @Override
     public void convert(File inputFile, File outputFile) {

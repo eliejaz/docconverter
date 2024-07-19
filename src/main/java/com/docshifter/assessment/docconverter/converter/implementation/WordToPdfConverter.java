@@ -1,5 +1,6 @@
-package com.docshifter.assessment.docconverter.converter;
+package com.docshifter.assessment.docconverter.converter.implementation;
 
+import com.docshifter.assessment.docconverter.converter.DocumentConverter;
 import fr.opensagres.poi.xwpf.converter.pdf.PdfConverter;
 import fr.opensagres.poi.xwpf.converter.pdf.PdfOptions;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.io.*;
 
 @Component
-public class WordToPdfConverter extends Converter {
+public class WordToPdfConverter extends DocumentConverter {
 
     @Override
     public void convert(File inputFile, File outputFile) {

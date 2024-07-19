@@ -1,8 +1,10 @@
 package com.docshifter.assessment.docconverter.service;
 
-import com.docshifter.assessment.docconverter.converter.PdfToTextConverter;
-import com.docshifter.assessment.docconverter.converter.PdfToWordConverter;
-import com.docshifter.assessment.docconverter.converter.WordToPdfConverter;
+import com.docshifter.assessment.docconverter.converter.DocumentConversionType;
+import com.docshifter.assessment.docconverter.converter.DocumentConverterFactory;
+import com.docshifter.assessment.docconverter.converter.implementation.PdfToTextConverter;
+import com.docshifter.assessment.docconverter.converter.implementation.PdfToWordConverter;
+import com.docshifter.assessment.docconverter.converter.implementation.WordToPdfConverter;
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.model.DocumentStatus;
 import com.docshifter.assessment.docconverter.service.implementation.ConversionService;
@@ -39,6 +41,8 @@ public class ConversionServiceTest {
     @Mock
     private PdfToWordConverter pdfToWordConverter;
     @Mock
+    private DocumentConverterFactory documentConverterFactory;
+    @Mock
     private DocumentService documentService;
 
     private String conversionId;
@@ -69,6 +73,7 @@ public class ConversionServiceTest {
     void testConvertPdfToText() throws IOException {
         Path outputFile = Paths.get("converted/test.docx");
 
+        when(documentConverterFactory.getConverter(DocumentConversionType.PDF_TO_TEXT)).thenReturn(pdfToTextConverter);
         doNothing().when(pdfToTextConverter).convert(any(File.class), any(File.class));
 
         when(documentService.getDocumentById(2L)).thenReturn(originalPDfDocument);
@@ -84,6 +89,7 @@ public class ConversionServiceTest {
     void testConvertWordToPdf() throws IOException {
         Path outputFile = Paths.get("converted/test.pdf");
 
+        when(documentConverterFactory.getConverter(DocumentConversionType.WORD_TO_PDF)).thenReturn(wordToPdfConverter);
         doNothing().when(wordToPdfConverter).convert(any(File.class), any(File.class));
 
         when(documentService.getDocumentById(2L)).thenReturn(orginalDocxDocument);
@@ -98,6 +104,7 @@ public class ConversionServiceTest {
     void testConvertPdfToDocx() throws IOException {
         Path outputFile = Paths.get("converted/test.docx");
 
+        when(documentConverterFactory.getConverter(DocumentConversionType.PDF_TO_WORD)).thenReturn(pdfToWordConverter);
         doNothing().when(pdfToWordConverter).convert(any(File.class), any(File.class));
 
         when(documentService.getDocumentById(2L)).thenReturn(originalPDfDocument);
