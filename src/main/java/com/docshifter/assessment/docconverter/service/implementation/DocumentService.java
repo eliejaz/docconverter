@@ -112,14 +112,14 @@ public class DocumentService implements DocumentServiceInterface {
             log.info("Document retrieved: {}", document.get());
         } else {
             log.error("Document with id '{}' not found", id);
-            throw  new RuntimeException("Document with id" + id + " not found");
+            throw new RuntimeException("Document with id" + id + " not found");
 
         }
         return document.orElse(null);
     }
 
     @CacheEvict(value = "documents", allEntries = true)
-    public String createRequestedDocument(Long fileId){
+    public String createRequestedDocument(Long fileId) {
         Document orignalDocument = getDocumentById(fileId);
 
         String conversionId = UUID.randomUUID().toString();
@@ -152,7 +152,7 @@ public class DocumentService implements DocumentServiceInterface {
     }
 
     public Optional<Document> getDocumentByConversionId(String conversionId) {
-        return  documentRepository.findByConversionId(conversionId);
+        return documentRepository.findByConversionId(conversionId);
     }
 
     @CacheEvict(value = "documents", allEntries = true)

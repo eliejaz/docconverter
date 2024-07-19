@@ -108,7 +108,6 @@ public class DocumentController {
     }
 
 
-
     @GetMapping("/{id}")
     public ResponseEntity<Document> getDocumentDetails(@PathVariable Long id) {
         try {

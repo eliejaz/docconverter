@@ -79,7 +79,7 @@ public class ConversionService implements ConversionServiceInterface {
 
 
     private void checkRetrievedDocFilePath(String conversionId, Document doc) {
-        if (doc.getFilePath() == null){
+        if (doc.getFilePath() == null) {
             documentService.updateDocumentStatus(conversionId, DocumentStatus.FAILED);
             log.error("Original doc file path is null");
             throw new RuntimeException("Original doc file path is null");

@@ -62,7 +62,7 @@ public class ConversionController {
     @GetMapping("/status/{conversionId}")
     public ResponseEntity<DocumentStatus> getConversionStatus(@PathVariable String conversionId) {
         DocumentStatus status = documentService.getConversionStatus(conversionId);
-        return ResponseEntity.ok( status);
+        return ResponseEntity.ok(status);
     }
 
     @GetMapping("/download/{conversionId}")

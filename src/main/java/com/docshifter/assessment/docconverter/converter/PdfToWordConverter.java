@@ -15,7 +15,7 @@ public class PdfToWordConverter extends Converter {
 
         try {
             // Get the path to the Python script
-            Path  scriptPath = loadAndExtracPdf2docxtScript();
+            Path scriptPath = loadAndExtracPdf2docxtScript();
 
             // Call the Python script
             log.info("Running Script...");

@@ -10,19 +10,29 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DocumentServiceInterface {
-    public Document uploadDocument(MultipartFile file) throws IOException;
-    public boolean deleteFile(String fileName) throws IOException;
-    public void deleteAllFiles() throws IOException;
-    public Document getDocumentById(Long id);
-    public String createRequestedDocument(Long fileId);
-    public List<Document> getAllFiles();
-    public Document getDocumentByOriginalName(String originalName);
-    public List<String> getAllUploadedFileNames();
-    public Optional<Document> getDocumentByConversionId(String conversionId);
-    public Optional<Document> getCompletedDocumentByConversionID(String conversionId);
+    Document uploadDocument(MultipartFile file) throws IOException;
 
-    public void updateDocumentStatus(String conversionId, DocumentStatus status);
-    public void updateDocumentStatus(String conversionId, DocumentStatus status, String convertedName, LocalDateTime convertedAt, String convertedFilePath);
+    boolean deleteFile(String fileName) throws IOException;
 
-    public DocumentStatus getConversionStatus(String conversionId);
+    void deleteAllFiles() throws IOException;
+
+    Document getDocumentById(Long id);
+
+    String createRequestedDocument(Long fileId);
+
+    List<Document> getAllFiles();
+
+    Document getDocumentByOriginalName(String originalName);
+
+    List<String> getAllUploadedFileNames();
+
+    Optional<Document> getDocumentByConversionId(String conversionId);
+
+    Optional<Document> getCompletedDocumentByConversionID(String conversionId);
+
+    void updateDocumentStatus(String conversionId, DocumentStatus status);
+
+    void updateDocumentStatus(String conversionId, DocumentStatus status, String convertedName, LocalDateTime convertedAt, String convertedFilePath);
+
+    DocumentStatus getConversionStatus(String conversionId);
 }
