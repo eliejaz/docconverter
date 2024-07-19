@@ -22,14 +22,18 @@ public class PdfToTextConverter extends DocumentConverter {
             PDFTextStripper pdfStripper = new PDFTextStripper();
             String pdfText = pdfStripper.getText(pdfDocument);
 
-            try (XWPFDocument wordDocument = new XWPFDocument()) {
-                XWPFParagraph paragraph = wordDocument.createParagraph();
-                paragraph.createRun().setText(pdfText);
+            createAndOutputTextToDocFile(outputFile, pdfText);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-                outputConvertedDocument(outputFile, wordDocument);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+    private void createAndOutputTextToDocFile(File outputFile, String pdfText) {
+        try (XWPFDocument wordDocument = new XWPFDocument()) {
+            XWPFParagraph paragraph = wordDocument.createParagraph();
+            paragraph.createRun().setText(pdfText);
+
+            outputConvertedDocument(outputFile, wordDocument);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
