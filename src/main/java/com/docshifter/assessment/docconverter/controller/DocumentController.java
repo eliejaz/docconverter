@@ -2,7 +2,7 @@ package com.docshifter.assessment.docconverter.controller;
 
 import com.docshifter.assessment.docconverter.annotation.RateLimited;
 import com.docshifter.assessment.docconverter.model.Document;
-import com.docshifter.assessment.docconverter.service.DocumentService;
+import com.docshifter.assessment.docconverter.service.implementation.DocumentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;

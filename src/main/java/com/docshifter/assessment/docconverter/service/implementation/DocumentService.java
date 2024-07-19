@@ -1,9 +1,10 @@
-package com.docshifter.assessment.docconverter.service;
+package com.docshifter.assessment.docconverter.service.implementation;
 
 import com.docshifter.assessment.docconverter.dto.StatusChangeNotification;
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.model.DocumentStatus;
 import com.docshifter.assessment.docconverter.repository.DocumentRepository;
+import com.docshifter.assessment.docconverter.service.DocumentServiceInterface;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,10 +26,10 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class DocumentService {
+public class DocumentService implements DocumentServiceInterface {
     private final Path uploadDir = Paths.get("uploads");
 
-    private SimpMessagingTemplate template;
+    private final SimpMessagingTemplate template;
     private final DocumentRepository documentRepository;
 
 
@@ -173,7 +174,7 @@ public class DocumentService {
         return documentOptional.map(Document::getStatus).orElse(DocumentStatus.UNKNOWN);
     }
 
-    public Optional<Document> getDocumentWithConversionID(String conversionId) {
+    public Optional<Document> getCompletedDocumentByConversionID(String conversionId) {
         Optional<Document> documentOptional = documentRepository.findByConversionId(conversionId);
         return documentOptional.filter(document -> DocumentStatus.COMPLETED.equals(document.getStatus()));
     }

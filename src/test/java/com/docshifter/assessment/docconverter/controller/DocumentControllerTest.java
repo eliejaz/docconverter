@@ -1,7 +1,7 @@
 package com.docshifter.assessment.docconverter.controller;
 
 import com.docshifter.assessment.docconverter.model.Document;
-import com.docshifter.assessment.docconverter.service.DocumentService;
+import com.docshifter.assessment.docconverter.service.implementation.DocumentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

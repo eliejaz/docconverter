@@ -4,6 +4,7 @@ import com.docshifter.assessment.docconverter.dto.StatusChangeNotification;
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.model.DocumentStatus;
 import com.docshifter.assessment.docconverter.repository.DocumentRepository;
+import com.docshifter.assessment.docconverter.service.implementation.DocumentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -234,7 +235,7 @@ class DocumentServiceTest {
 
         when(documentRepository.findByConversionId("1234")).thenReturn(Optional.of(document));
 
-        Optional<Document> foundDocument = documentService.getDocumentWithConversionID("1234");
+        Optional<Document> foundDocument = documentService.getCompletedDocumentByConversionID("1234");
 
         assertTrue(foundDocument.isPresent());
         assertEquals(document, foundDocument.get());
@@ -249,7 +250,7 @@ class DocumentServiceTest {
 
         when(documentRepository.findByConversionId("1234")).thenReturn(Optional.of(document));
 
-        Optional<Document> foundDocument = documentService.getDocumentWithConversionID("1234");
+        Optional<Document> foundDocument = documentService.getCompletedDocumentByConversionID("1234");
 
         assertFalse(foundDocument.isPresent());
         verify(documentRepository, times(1)).findByConversionId("1234");

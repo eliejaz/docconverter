@@ -1,10 +1,11 @@
-package com.docshifter.assessment.docconverter.service;
+package com.docshifter.assessment.docconverter.service.implementation;
 
 import com.docshifter.assessment.docconverter.converter.PdfToTextConverter;
 import com.docshifter.assessment.docconverter.converter.PdfToWordConverter;
 import com.docshifter.assessment.docconverter.converter.WordToPdfConverter;
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.model.DocumentStatus;
+import com.docshifter.assessment.docconverter.service.ConversionServiceInterface;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 
 @Service
 @Slf4j
-public class ConversionService {
+public class ConversionService implements ConversionServiceInterface {
     private final Path convertedDir = Paths.get("converted");
 
     private final DocumentService documentService;

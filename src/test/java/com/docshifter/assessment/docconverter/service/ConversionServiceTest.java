@@ -5,6 +5,8 @@ import com.docshifter.assessment.docconverter.converter.PdfToWordConverter;
 import com.docshifter.assessment.docconverter.converter.WordToPdfConverter;
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.model.DocumentStatus;
+import com.docshifter.assessment.docconverter.service.implementation.ConversionService;
+import com.docshifter.assessment.docconverter.service.implementation.DocumentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -4,8 +4,8 @@ import com.docshifter.assessment.docconverter.annotation.RateLimited;
 import com.docshifter.assessment.docconverter.dto.ConversionResponse;
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.model.DocumentStatus;
-import com.docshifter.assessment.docconverter.service.ConversionService;
-import com.docshifter.assessment.docconverter.service.DocumentService;
+import com.docshifter.assessment.docconverter.service.implementation.ConversionService;
+import com.docshifter.assessment.docconverter.service.implementation.DocumentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -68,7 +68,7 @@ public class ConversionController {
     @GetMapping("/download/{conversionId}")
     public ResponseEntity<?> downloadConvertedFile(@PathVariable String conversionId) {
         log.info("Request received to download file with conversion ID: {}", conversionId);
-        Optional<Document> documentOptional = documentService.getDocumentWithConversionID(conversionId);
+        Optional<Document> documentOptional = documentService.getCompletedDocumentByConversionID(conversionId);
 
         if (documentOptional.isEmpty()) {
             log.warn("Document not found or conversion not completed for conversion ID: {}", conversionId);

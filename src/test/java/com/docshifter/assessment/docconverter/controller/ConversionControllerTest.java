@@ -3,8 +3,8 @@ package com.docshifter.assessment.docconverter.controller;
 import com.docshifter.assessment.docconverter.dto.ConversionResponse;
 import com.docshifter.assessment.docconverter.model.Document;
 import com.docshifter.assessment.docconverter.model.DocumentStatus;
-import com.docshifter.assessment.docconverter.service.ConversionService;
-import com.docshifter.assessment.docconverter.service.DocumentService;
+import com.docshifter.assessment.docconverter.service.implementation.ConversionService;
+import com.docshifter.assessment.docconverter.service.implementation.DocumentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -107,13 +107,13 @@ class ConversionControllerTest {
     @Test
     void testDownloadConvertedFileNotFound() {
         String conversionId = "conversion-id-123";
-        when(documentService.getDocumentWithConversionID(conversionId)).thenReturn(Optional.empty());
+        when(documentService.getCompletedDocumentByConversionID(conversionId)).thenReturn(Optional.empty());
 
         ResponseEntity<?> response = conversionController.downloadConvertedFile(conversionId);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Document not found or conversion not completed.", response.getBody());
-        verify(documentService, times(1)).getDocumentWithConversionID(conversionId);
+        verify(documentService, times(1)).getCompletedDocumentByConversionID(conversionId);
     }
 
 
@@ -123,12 +123,12 @@ class ConversionControllerTest {
         Document document = new Document();
         document.setConversionId(conversionId);
         document.setConvertedFilePath("converted/testFile2.docx");
-        when(documentService.getDocumentWithConversionID(conversionId)).thenReturn(Optional.of(document));
+        when(documentService.getCompletedDocumentByConversionID(conversionId)).thenReturn(Optional.of(document));
 
         ResponseEntity<?> response = conversionController.downloadConvertedFile(conversionId);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("File not found.", response.getBody());
-        verify(documentService, times(1)).getDocumentWithConversionID(conversionId);
+        verify(documentService, times(1)).getCompletedDocumentByConversionID(conversionId);
     }
 }

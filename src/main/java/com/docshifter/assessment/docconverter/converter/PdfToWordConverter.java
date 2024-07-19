@@ -29,7 +29,6 @@ public class PdfToWordConverter extends Converter {
             throw new RuntimeException(e);
         }
 
-
     }
 
     Process runPdf2docxtScript(Path scriptPath, Path inputFile, Path outputFile) throws IOException {
